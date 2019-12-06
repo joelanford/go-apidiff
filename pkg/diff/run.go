@@ -50,7 +50,7 @@ func Run(opts Options) (*Diff, error) {
 	if stat, err := wt.Status(); err != nil {
 		return nil, fmt.Errorf("failed to get git status: %w", err)
 	} else if !stat.IsClean() {
-		return nil, fmt.Errorf("cannot compare with dirty git tree")
+		return nil, fmt.Errorf("git tree is dirty")
 	}
 
 	origRef, err := repo.Head()
