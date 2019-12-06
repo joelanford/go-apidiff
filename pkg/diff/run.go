@@ -46,6 +46,13 @@ func Run(opts Options) (*Diff, error) {
 		return nil, fmt.Errorf("failed to get git worktree: %w", err)
 	}
 
+
+	if stat, err := wt.Status(); err != nil {
+		return nil, fmt.Errorf("failed to get git status: %w", err)
+	} else if !stat.IsClean() {
+		return nil, fmt.Errorf("cannot compare with dirty git tree")
+	}
+
 	origRef, err := repo.Head()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get current HEAD reference: %w", err)

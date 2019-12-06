@@ -35,7 +35,7 @@ Flags:
       --compare-imports    Compare exported API differences of the imports in the repo.
   -h, --help               help for go-apidiff
       --print-compatible   Print compatible API changes
-      --repo-path string   Path to root of git repository to compare (default "/home/joe/projects/work/kubernetes-sigs/controller-runtime")
+      --repo-path string   Path to root of git repository to compare (default "/home/myuser/myproject")
 ```
 
 ## Example
