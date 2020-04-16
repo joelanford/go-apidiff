@@ -39,6 +39,12 @@ func newRootCmd() *cobra.Command {
 		if len(args) < 1 || len(args) > 2 {
 			return fmt.Errorf("accepts 1 or 2 args, received %d", len(args))
 		}
+		if args[0] == "" {
+			return fmt.Errorf("oldCommit should not be empty")
+		}
+		if len(args) == 2 && args[1] == "" {
+			return fmt.Errorf("if provided, newCommit should not be empty")
+		}
 		return nil
 	}
 
