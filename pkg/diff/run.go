@@ -187,6 +187,21 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 			}
 		}
 	}
+
+	// Reset the worktree. Sometimes loading the packages can cause the
+	// worktree to become dirty. It seems like this occurs because package
+	// loading can change go.mod and go.sum.
+	//
+	// TODO(joelanford): If go-git starts to support checking out of specific
+	//   files we can update this to be less aggressive and only checkout
+	//   go.mod and go.sum instead of resetting the entire tree.
+	if err := wt.Reset(&git.ResetOptions{
+		Mode:   git.HardReset,
+		Commit: hash,
+	}); err != nil {
+		return nil, nil, fmt.Errorf("failed to hard reset to %v: %w", hash, err)
+	}
+
 	return selfPkgs, importPkgs, nil
 }
 
