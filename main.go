@@ -20,8 +20,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joelanford/go-apidiff/pkg/diff"
 	"github.com/spf13/cobra"
+
+	"github.com/joelanford/go-apidiff/pkg/diff"
 )
 
 func main() {

@@ -21,11 +21,10 @@ import (
 	"go/types"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4/plumbing"
-
 	"golang.org/x/exp/apidiff"
 	"golang.org/x/tools/go/packages"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 type Options struct {
@@ -45,8 +44,6 @@ func Run(opts Options) (*Diff, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get git worktree: %w", err)
 	}
-
-
 	if stat, err := wt.Status(); err != nil {
 		return nil, fmt.Errorf("failed to get git status: %w", err)
 	} else if !stat.IsClean() {
