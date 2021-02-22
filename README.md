@@ -9,7 +9,54 @@ Check API compatibility between different revisions of a Go project
 > working outside of `$GOPATH` on a project that supports Go modules at the new
 > commit, but not the old commit, you may not get accurate results.
 
-## Installation
+## GitHub Action
+
+### Inputs
+
+#### `base-ref`
+
+Base reference for API compatibility comparison (default: `origin/${GITHUB_BASE_REF}`)
+
+#### `version`
+
+Version of go-apidiff to use (default: `latest`)
+
+#### `compare-imports`
+
+Compare exported API differences in the imports of the repo (default: `false`)
+
+#### `print-compatible`
+
+Print compatible API changes (default: `true`)
+
+#### `repo-path`
+
+Path to root of git repository to compare (default: current working directory)
+
+### Outputs
+
+_(none)_
+
+### Example usage
+
+```yaml
+name: go-apidiff
+on: [ pull_request ]
+jobs:
+  go-apidiff:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-go@v1
+      with:
+        go-version: 1.15.x
+    - uses: joelanford/go-apidiff
+```
+
+
+## Local Installation
 
 To install into $GOPATH/bin, run the following:
 ```console
@@ -38,7 +85,7 @@ Flags:
       --repo-path string   Path to root of git repository to compare (default "/home/myuser/myproject")
 ```
 
-## Example
+## Example output
 ```console
 $ GO111MODULE=off go get golang.org/x/exp
 $ cd $GOPATH/src/golang.org/x/exp/apidiff

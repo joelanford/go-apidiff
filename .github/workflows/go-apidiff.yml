@@ -1,0 +1,14 @@
+name: go-apidiff
+on: [ pull_request ]
+jobs:
+  go-apidiff:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-go@v1
+      with:
+        go-version: 1.15.x
+    - uses: ./
+
