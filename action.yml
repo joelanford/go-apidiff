@@ -1,5 +1,8 @@
 name: 'go-apidiff'
 description: 'Test API compatibility of changes in your Go library'
+branding:
+  icon: 'code'  
+  color: 'blue'
 inputs:
   base-ref:
     description: 'Base reference for API compatibility comparison (default: base branch)'
