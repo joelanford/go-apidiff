@@ -44,14 +44,15 @@ name: go-apidiff
 on: [ pull_request ]
 jobs:
   go-apidiff:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - uses: actions/setup-go@v1
+    - uses: actions/setup-go@v2
       with:
-        go-version: 1.15.x
+        go-version: 1.15
     - uses: joelanford/go-apidiff
 ```
 
