@@ -21,10 +21,12 @@ import (
 	"go/types"
 	"strings"
 
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"golang.org/x/exp/apidiff"
 	"golang.org/x/tools/go/packages"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
+
+	"github.com/joelanford/go-apidiff/pkg/diff/internal/osfs"
 )
 
 type Options struct {
@@ -44,6 +46,15 @@ func Run(opts Options) (*Diff, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get git worktree: %w", err)
 	}
+
+	// TODO: Using a custom filesystem is necessary due to a bug related
+	//  to computing hashes for symlinks with targets outside the repo.
+	//  See: https://github.com/go-git/go-git/issues/253
+	wt.Filesystem, err = osfs.New(opts.RepoPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set worktree filesystem interface: %v", err)
+	}
+
 	if stat, err := wt.Status(); err != nil {
 		return nil, fmt.Errorf("failed to get git status: %w", err)
 	} else if !stat.IsClean() {
