@@ -53,7 +53,7 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: 1.15
-    - uses: joelanford/go-apidiff
+    - uses: joelanford/go-apidiff@master
 ```
 
 
