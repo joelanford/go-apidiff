@@ -1,0 +1,22 @@
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: go-apidiff 
+    main: .
+    binary: go-apidiff
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    targets:
+      - linux_amd64
+      - darwin_amd64
+    env:
+      - CGO_ENABLED=0
+release:
+  github:
+    owner: joelanford
+    name: go-apidiff
+
