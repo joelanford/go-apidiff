@@ -33,8 +33,12 @@ runs:
           echo "*** Installing go-apidiff from source ***"
           go install .
         else
+          INSTALL_CMD="go install"
+          if [[ "$(go version | cut -d' ' -f3 | cut -d'.' -f2 | grep -o -E '[0-9]+' | head -1)" -lt "16" ]]; then
+            INSTALL_CMD="go get"
+          fi
           DIR=$(mktemp -d)
-          (cd ${DIR} && GO111MODULE=on go get github.com/joelanford/go-apidiff@${{ inputs.version }}) && rmdir ${DIR}
+          (cd ${DIR} && GO111MODULE=on ${INSTALL_CMD} github.com/joelanford/go-apidiff@${{ inputs.version }}) && rmdir ${DIR}
         fi
         set -x
         $(go env GOPATH)/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }}
