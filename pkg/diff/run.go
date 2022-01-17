@@ -19,6 +19,8 @@ package diff
 import (
 	"fmt"
 	"go/types"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
@@ -164,15 +166,25 @@ func getHashes(repo *git.Repository, oldRev, newRev plumbing.Revision) (*plumbin
 }
 
 func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Package, map[string]*packages.Package, error) {
-	if err := wt.Checkout(&git.CheckoutOptions{
-		Hash: hash,
-	}); err != nil {
+	if err := wt.Checkout(&git.CheckoutOptions{Hash: hash, Force: true}); err != nil {
+		return nil, nil, err
+	}
+	if err := wt.Clean(&git.CleanOptions{Dir: true}); err != nil {
+		return nil, nil, err
+	}
+	if err := wt.Reset(&git.ResetOptions{Commit: hash, Mode: git.HardReset}); err != nil {
 		return nil, nil, err
 	}
 
+	goFlags := "-mod=readonly"
+	if st, err := os.Stat(filepath.Join(wt.Filesystem.Root(), "vendor")); err == nil && st.IsDir() {
+		goFlags = "-mod=vendor"
+	}
 	cfg := packages.Config{
-		Mode:  packages.LoadTypes,
-		Tests: false,
+		Mode: packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles |
+			packages.NeedImports | packages.NeedTypes | packages.NeedTypesSizes,
+		Tests:      false,
+		BuildFlags: []string{goFlags},
 	}
 	pkgs, err := packages.Load(&cfg, "./...")
 	if err != nil {
