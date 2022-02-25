@@ -56,10 +56,9 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-go@v2
       with:
-        go-version: 1.15
-    - uses: joelanford/go-apidiff@master
+        go-version: 1.17
+    - uses: joelanford/go-apidiff@main
 ```
-
 
 ## Local Installation
 
