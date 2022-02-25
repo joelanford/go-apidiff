@@ -24,9 +24,22 @@ inputs:
     description: 'Path to root of git repository to compare'
     required: false
     default: '.'
+  skip-cache:
+    description: 'Skip automatic caching of go module directories'
+    required: false
+    default: false
 runs:
   using: 'composite'
   steps:
+    - uses: actions/cache@v2
+      if: ${{ inputs.skip-cache != 'true' }}
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-apidiff-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-apidiff
     - shell: bash
       run: |
         if [[ "${{ github.repository }}" == "joelanford/go-apidiff" && "${{ inputs.version }}" == "latest" ]]; then
