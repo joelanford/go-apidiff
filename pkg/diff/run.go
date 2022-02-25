@@ -60,7 +60,7 @@ func Run(opts Options) (*Diff, error) {
 	if stat, err := wt.Status(); err != nil {
 		return nil, fmt.Errorf("failed to get git status: %w", err)
 	} else if !stat.IsClean() {
-		return nil, fmt.Errorf("git tree is dirty")
+		return nil, &GitStatusError{stat, fmt.Errorf("current git tree is dirty")}
 	}
 
 	origRef, err := repo.Head()
@@ -101,6 +101,15 @@ func Run(opts Options) (*Diff, error) {
 	}
 
 	return diff, nil
+}
+
+type GitStatusError struct {
+	Stat git.Status
+	Err  error
+}
+
+func (err *GitStatusError) Error() string {
+	return fmt.Sprintf("%v\n%v", err.Err, err.Stat)
 }
 
 func compareChangesAdditionsAndRemovals(oldPkgs, newPkgs map[string]*packages.Package) (map[string]apidiff.Report, bool) {
