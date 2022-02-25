@@ -1,13 +1,10 @@
 # go-apidiff
 Check API compatibility between different revisions of a Go project
 
-> **NOTE**: `go-apidiff` is an early proof-of-concept and has not been tested and
-> verified on a wide variety of packages. Trust its results at your own risk.
->
-> `go-apidiff` is dependent on Go's built-in package listing and type parsing,
-> and can therefore be unreliable in certain situations. For example, if you're
-> working outside of `$GOPATH` on a project that supports Go modules at the new
-> commit, but not the old commit, you may not get accurate results.
+`go-apidiff` is dependent on Go's built-in package listing and type parsing,
+and can therefore be unreliable in certain situations. For example, if you're
+working outside of `$GOPATH` on a project that supports Go modules at the new
+commit, but not the old commit, you may not get accurate results.
 
 ## GitHub Action
 
@@ -64,7 +61,7 @@ jobs:
 
 To install into $GOPATH/bin, run the following:
 ```console
-$ go get github.com/joelanford/go-apidiff
+$ go install github.com/joelanford/go-apidiff@latest
 ```
 
 ## Usage
