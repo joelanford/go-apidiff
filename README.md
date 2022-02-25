@@ -33,6 +33,10 @@ Print compatible API changes (default: `true`)
 
 Path to root of git repository to compare (default: current working directory)
 
+#### `skip-cache`
+
+Skip automatic caching of go module directories (default: `false`)
+
 ### Outputs
 
 _(none)_
