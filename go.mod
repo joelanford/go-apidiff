@@ -1,6 +1,6 @@
 module github.com/joelanford/go-apidiff
 
-go 1.17
+go 1.18
 
 require (
 	github.com/go-git/go-billy/v5 v5.3.1
