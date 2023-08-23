@@ -53,7 +53,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-go@v2
       with:
-        go-version: 1.18
+        go-version: "1.18"
     - uses: joelanford/go-apidiff@main
 ```
 
