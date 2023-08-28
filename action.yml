@@ -73,4 +73,5 @@ runs:
           exit 0
         fi
         echo "semver-type=major" >> $GITHUB_OUTPUT
+        echo "message=$OUTPUT" >> $GITHUB_OUTPUT
         exit $GOAPIDIFF_RC
