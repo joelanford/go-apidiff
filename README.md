@@ -40,6 +40,11 @@ Skip automatic caching of go module directories (default: `false`)
 
 Returns the type (patch, minor, major) of the sementic version that would be required if producing a release.
 
+#### `message`
+
+Returns the string containing text explaining API changes. The string can be empty if no changes are present. 
+
+
 ### Example usage
 
 ```yaml
