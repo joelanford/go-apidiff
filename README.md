@@ -30,10 +30,6 @@ Print compatible API changes (default: `true`)
 
 Path to root of git repository to compare (default: current working directory)
 
-#### `skip-cache`
-
-Skip automatic caching of go module directories (default: `false`)
-
 ### Outputs
 
 #### `semver-type`
@@ -50,12 +46,12 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-go@v2
+    - uses: actions/setup-go@v4
       with:
-        go-version: "1.18"
+        go-version-file: go.mod
     - uses: joelanford/go-apidiff@main
 ```
 
