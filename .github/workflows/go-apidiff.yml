@@ -4,11 +4,11 @@ jobs:
   go-apidiff:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-go@v1
+    - uses: actions/setup-go@v4
       with:
-        go-version: 1.18.x
+        go-version-file: go.mod
     - uses: ./
 
