@@ -24,6 +24,10 @@ inputs:
     description: 'Path to root of git repository to compare'
     required: false
     default: '.'
+  ignore-list:
+    description: 'Comma-separated list of packages prefixes to ignore'
+    required: false
+    default: ''
 outputs:
   semver-type:
     description: "Returns the type (patch, minor, major) of the sementic version that would be required if producing a release."
@@ -48,7 +52,7 @@ runs:
         set -x
         GOPATH=$(go env GOPATH)
         set +e
-        OUTPUT=$($GOPATH/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }})
+        OUTPUT=$($GOPATH/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }} --ignore=${{ inputs.ignore-list }} )
         GOAPIDIFF_RC=$?
         set -e
         if [ $GOAPIDIFF_RC -eq 0 ]; then
