@@ -72,6 +72,11 @@ runs:
           echo "semver-type=minor" >> $GITHUB_OUTPUT
           exit 0
         fi
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "semver-type=major" >> $GITHUB_OUTPUT
-        echo "message=$OUTPUT" >> $GITHUB_OUTPUT
-        exit $GOAPIDIFF_RC
+        {
+          echo "output<<$EOF"
+          echo "$OUTPUT"
+          echo "$EOF"
+        } >> $GITHUB_OUTPUT
+   echo "$EOF"
