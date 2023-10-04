@@ -79,4 +79,4 @@ runs:
           echo "$OUTPUT"
           echo "$EOF"
         } >> $GITHUB_OUTPUT
-   echo "$EOF"
+        exit $GOAPIDIFF_RC
