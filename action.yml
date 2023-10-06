@@ -32,6 +32,9 @@ outputs:
   semver-type:
     description: "Returns the type (patch, minor, major) of the sementic version that would be required if producing a release."
     value: ${{ steps.go-apidiff.outputs.semver-type }}
+  output:
+    description: "Contains diff output information"
+    value: ${{ steps.go-apidiff.outputs.output }}
 runs:
   using: 'composite'
   steps:
