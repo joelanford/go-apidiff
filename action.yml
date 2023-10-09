@@ -28,6 +28,9 @@ outputs:
   semver-type:
     description: "Returns the type (patch, minor, major) of the sementic version that would be required if producing a release."
     value: ${{ steps.go-apidiff.outputs.semver-type }}
+  output:
+    description: "Contains diff output information"
+    value: ${{ steps.go-apidiff.outputs.output }}
 runs:
   using: 'composite'
   steps:
@@ -51,6 +54,13 @@ runs:
         OUTPUT=$($GOPATH/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }})
         GOAPIDIFF_RC=$?
         set -e
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        {
+          echo "output<<$EOF"
+          echo "$OUTPUT"
+          echo "$EOF"
+        } >> $GITHUB_OUTPUT
+        
         if [ $GOAPIDIFF_RC -eq 0 ]; then
           if [ -z "$OUTPUT" ]; then
             echo "semver-type=patch" >> $GITHUB_OUTPUT

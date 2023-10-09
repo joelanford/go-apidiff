@@ -34,7 +34,12 @@ Path to root of git repository to compare (default: current working directory)
 
 #### `semver-type`
 
-Returns the type (patch, minor, major) of the sementic version that would be required if producing a release.
+Returns the type (patch, minor, major) of the semantic version that would be required if producing a release.
+
+#### `output`
+
+Returns the string containing text explaining API changes. The string can be empty if no changes are present. 
+
 
 ### Example usage
 
