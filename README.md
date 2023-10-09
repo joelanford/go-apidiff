@@ -12,7 +12,7 @@ commit, but not the old commit, you may not get accurate results.
 
 #### `base-ref`
 
-Base reference for API compatibility comparison (default: `origin/${GITHUB_BASE_REF}`)
+Base reference for API compatibility comparison (default: `github.event.pull_request.base.sha` for PR  and `github.event.merge_group.base_sha` for merge queue)
 
 #### `version`
 
