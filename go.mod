@@ -7,8 +7,8 @@ require (
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/spf13/cobra v0.0.5
 	golang.org/x/exp v0.0.0-20220921164117-439092de6870
-	golang.org/x/sys v0.15.0
-	golang.org/x/tools v0.13.0
+	golang.org/x/sys v0.16.0
+	golang.org/x/tools v0.17.0
 )
 
 require (
@@ -28,8 +28,8 @@ require (
 	github.com/skeema/knownhosts v1.2.1 // indirect
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
