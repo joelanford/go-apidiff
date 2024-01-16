@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/spf13/cobra v1.8.0
-	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
+	golang.org/x/exp v0.0.0-20230811145653-3b0b5b66b5f1
 	golang.org/x/sys v0.16.0
 	golang.org/x/tools v0.17.0
 )
