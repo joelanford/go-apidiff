@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.12.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	golang.org/x/exp v0.0.0-20230811145653-3b0b5b66b5f1
 	golang.org/x/sys v0.26.0
 	golang.org/x/tools v0.17.0
