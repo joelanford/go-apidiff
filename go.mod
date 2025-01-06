@@ -1,14 +1,15 @@
 module github.com/joelanford/go-apidiff
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/go-git/go-billy/v5 v5.6.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/spf13/cobra v1.8.1
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
-	golang.org/x/sys v0.28.0
-	golang.org/x/tools v0.23.0
+	golang.org/x/sys v0.29.0
+	golang.org/x/tools v0.29.0
 )
 
 require (
@@ -28,9 +29,9 @@ require (
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/mod v0.19.0 // indirect
-	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/mod v0.22.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
