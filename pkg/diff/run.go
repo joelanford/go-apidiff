@@ -34,6 +34,7 @@ import (
 
 type Options struct {
 	RepoPath       string
+	RelativePath   string
 	OldCommit      string
 	NewCommit      string
 	CompareImports bool
@@ -97,12 +98,12 @@ func Run(opts Options) (*Diff, error) {
 		}
 	}()
 
-	selfOld, importsOld, err := getPackages(*wt, *oldHash)
+	selfOld, importsOld, err := getPackages(*wt, *oldHash, opts.RelativePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from old commit %q (%s): %w", opts.OldCommit, oldHash, err)
 	}
 
-	selfNew, importsNew, err := getPackages(*wt, *newHash)
+	selfNew, importsNew, err := getPackages(*wt, *newHash, opts.RelativePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from new commit %q (%s): %w", opts.NewCommit, newHash, err)
 	}
@@ -192,7 +193,7 @@ func getHashes(repo *git.Repository, oldRev, newRev plumbing.Revision) (*plumbin
 	return oldCommitHash, newCommitHash, nil
 }
 
-func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Package, map[string]*packages.Package, error) {
+func getPackages(wt git.Worktree, hash plumbing.Hash, relativePath string) (map[string]*packages.Package, map[string]*packages.Package, error) {
 	if err := wt.Checkout(&git.CheckoutOptions{Hash: hash, Force: true}); err != nil {
 		return nil, nil, err
 	}
@@ -212,6 +213,9 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 			packages.NeedImports | packages.NeedTypes | packages.NeedTypesSizes,
 		Tests:      false,
 		BuildFlags: []string{goFlags},
+	}
+	if relativePath != "" {
+		cfg.Dir = filepath.Join(wt.Filesystem.Root(), relativePath)
 	}
 	pkgs, err := packages.Load(&cfg, "./...")
 	if err != nil {
