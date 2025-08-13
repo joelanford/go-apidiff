@@ -225,6 +225,10 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 		if strings.HasSuffix(pkg.PkgPath, "/internal") || strings.Contains(pkg.PkgPath, "/internal/") {
 			continue
 		}
+		// skip test packages
+		if strings.HasPrefix(strings.TrimPrefix(pkg.Dir, wt.Filesystem.Root()), "/test/") {
+			continue
+		}
 		selfPkgs[pkg.PkgPath] = pkg
 	}
 	for _, pkg := range pkgs {
