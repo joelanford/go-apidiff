@@ -1,3 +1,6 @@
+//go:build !plan9 && !windows
+// +build !plan9,!windows
+
 /*
 Copyright 2021 Joe Lanford.
 
@@ -15,8 +18,6 @@ limitations under the License.
 
 NOTE: Originally copied from https://raw.githubusercontent.com/go-git/go-billy/d7a8afccaed297c30f8dff5724dbe422b491dd0d/osfs/os_posix.go
 */
-
-// +build !plan9,!windows
 
 package osfs
 
