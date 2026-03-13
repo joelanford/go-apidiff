@@ -24,6 +24,10 @@ inputs:
     description: 'Path to root of git repository to compare'
     required: false
     default: '.'
+  exclude:
+    description: 'Patterns to exclude from API comparison (newline or comma-separated, relative to module root, supports * and ** wildcards)'
+    required: false
+    default: ''
 outputs:
   semver-type:
     description: "Returns the type (patch, minor, major) of the sementic version that would be required if producing a release."
@@ -50,8 +54,23 @@ runs:
         fi
         set -x
         GOPATH=$(go env GOPATH)
+        EXCLUDE_FLAGS=""
+        if [[ -n "${{ inputs.exclude }}" ]]; then
+          echo "${{ inputs.exclude }}" | tr ',' '\n' | while IFS= read -r line; do
+            line="$(echo "$line" | xargs)"
+            if [[ -n "$line" ]]; then
+              echo "$line" >> "$RUNNER_TEMP/go-apidiff-excludes"
+            fi
+          done
+          if [[ -f "$RUNNER_TEMP/go-apidiff-excludes" ]]; then
+            while IFS= read -r pattern; do
+              EXCLUDE_FLAGS="$EXCLUDE_FLAGS --exclude=$pattern"
+            done < "$RUNNER_TEMP/go-apidiff-excludes"
+            rm -f "$RUNNER_TEMP/go-apidiff-excludes"
+          fi
+        fi
         set +e
-        OUTPUT=$($GOPATH/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }})
+        OUTPUT=$($GOPATH/bin/go-apidiff ${{ inputs.base-ref }} --compare-imports=${{ inputs.compare-imports }} --print-compatible=${{ inputs.print-compatible }} --repo-path=${{ inputs.repo-path }} $EXCLUDE_FLAGS)
         GOAPIDIFF_RC=$?
         set -e
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)

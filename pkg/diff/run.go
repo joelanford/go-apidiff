@@ -17,10 +17,12 @@ limitations under the License.
 package diff
 
 import (
+	"bufio"
 	"fmt"
 	"go/types"
 	"os"
 	"path/filepath"
+	pathpkg "path"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
@@ -37,6 +39,7 @@ type Options struct {
 	OldCommit      string
 	NewCommit      string
 	CompareImports bool
+	ExcludePaths   []string
 }
 
 func Run(opts Options) (*Diff, error) {
@@ -97,12 +100,12 @@ func Run(opts Options) (*Diff, error) {
 		}
 	}()
 
-	selfOld, importsOld, err := getPackages(*wt, *oldHash)
+	selfOld, importsOld, err := getPackages(*wt, *oldHash, opts.ExcludePaths)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from old commit %q (%s): %w", opts.OldCommit, oldHash, err)
 	}
 
-	selfNew, importsNew, err := getPackages(*wt, *newHash)
+	selfNew, importsNew, err := getPackages(*wt, *newHash, opts.ExcludePaths)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from new commit %q (%s): %w", opts.NewCommit, newHash, err)
 	}
@@ -192,7 +195,7 @@ func getHashes(repo *git.Repository, oldRev, newRev plumbing.Revision) (*plumbin
 	return oldCommitHash, newCommitHash, nil
 }
 
-func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Package, map[string]*packages.Package, error) {
+func getPackages(wt git.Worktree, hash plumbing.Hash, excludePaths []string) (map[string]*packages.Package, map[string]*packages.Package, error) {
 	if err := wt.Checkout(&git.CheckoutOptions{Hash: hash, Force: true}); err != nil {
 		return nil, nil, err
 	}
@@ -201,6 +204,11 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 	}
 	if err := wt.Reset(&git.ResetOptions{Commit: hash, Mode: git.HardReset}); err != nil {
 		return nil, nil, err
+	}
+
+	modulePath, err := getModulePath(wt)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read module path: %w", err)
 	}
 
 	goFlags := "-mod=readonly"
@@ -223,6 +231,9 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 	for _, pkg := range pkgs {
 		// skip internal packages since they do not contain public APIs
 		if strings.HasSuffix(pkg.PkgPath, "/internal") || strings.Contains(pkg.PkgPath, "/internal/") {
+			continue
+		}
+		if isExcluded(pkg.PkgPath, modulePath, excludePaths) {
 			continue
 		}
 		selfPkgs[pkg.PkgPath] = pkg
@@ -257,4 +268,107 @@ func checkoutRef(wt git.Worktree, ref plumbing.Reference) (err error) {
 		return wt.Checkout(&git.CheckoutOptions{Hash: ref.Hash()})
 	}
 	return wt.Checkout(&git.CheckoutOptions{Branch: ref.Name()})
+}
+
+// getModulePath reads go.mod from the worktree root and returns the module path.
+func getModulePath(wt git.Worktree) (string, error) {
+	goModPath := filepath.Join(wt.Filesystem.Root(), "go.mod")
+	f, err := os.Open(goModPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open go.mod: %w", err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "module ") {
+			return strings.TrimSpace(strings.TrimPrefix(line, "module ")), nil
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("error reading go.mod: %w", err)
+	}
+	return "", fmt.Errorf("module directive not found in go.mod")
+}
+
+// isExcluded checks whether a package path should be excluded based on the
+// configured exclude patterns. It strips the module prefix from the package
+// path to get a module-relative path, then checks each pattern.
+func isExcluded(pkgPath, modulePath string, excludePaths []string) bool {
+	if len(excludePaths) == 0 {
+		return false
+	}
+
+	// Get the path relative to the module root
+	relPath := pkgPath
+	if pkgPath == modulePath {
+		relPath = "."
+	} else if strings.HasPrefix(pkgPath, modulePath+"/") {
+		relPath = strings.TrimPrefix(pkgPath, modulePath+"/")
+	} else {
+		// Not a module package, don't exclude
+		return false
+	}
+
+	for _, pattern := range excludePaths {
+		if matchPattern(pattern, relPath) {
+			return true
+		}
+	}
+	return false
+}
+
+// matchPattern checks if path matches the given pattern. Patterns are split
+// by "/" and matched segment-by-segment. "*" matches any single path segment
+// (using path.Match), "**" matches zero or more complete path segments.
+// A pattern without wildcards does prefix matching: "cmd" matches "cmd",
+// "cmd/tool", "cmd/tool/sub", etc.
+func matchPattern(pattern, path string) bool {
+	// Patterns without wildcards do prefix matching
+	if !strings.ContainsAny(pattern, "*?[") {
+		return path == pattern || strings.HasPrefix(path, pattern+"/")
+	}
+
+	patternParts := strings.Split(pattern, "/")
+	pathParts := strings.Split(path, "/")
+
+	return matchParts(patternParts, pathParts)
+}
+
+func matchParts(patternParts, pathParts []string) bool {
+	if len(patternParts) == 0 {
+		return len(pathParts) == 0
+	}
+
+	seg := patternParts[0]
+
+	if seg == "**" {
+		restPattern := patternParts[1:]
+		// When "**" is the last pattern element (no following segments),
+		// it requires at least one path segment (e.g., cmd/** does not
+		// match cmd itself). Otherwise, it matches zero or more segments
+		// (e.g., **/generated matches generated at root).
+		start := 0
+		if len(restPattern) == 0 {
+			start = 1
+		}
+		for i := start; i <= len(pathParts); i++ {
+			if matchParts(restPattern, pathParts[i:]) {
+				return true
+			}
+		}
+		return false
+	}
+
+	if len(pathParts) == 0 {
+		return false
+	}
+
+	matched, err := pathpkg.Match(seg, pathParts[0])
+	if err != nil || !matched {
+		return false
+	}
+
+	return matchParts(patternParts[1:], pathParts[1:])
 }
