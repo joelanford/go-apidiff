@@ -30,6 +30,20 @@ Print compatible API changes (default: `true`)
 
 Path to root of git repository to compare (default: current working directory)
 
+#### `exclude`
+
+Patterns to exclude from API comparison (newline or comma-separated, relative to module root, supports `*` and `**` wildcards). A pattern without wildcards does prefix matching (e.g. `cmd` matches `cmd` and everything under it).
+
+Example:
+```yaml
+- uses: joelanford/go-apidiff@main
+  with:
+    exclude: |
+      cmd
+      examples
+      test*
+```
+
 ### Outputs
 
 #### `semver-type`
@@ -83,10 +97,11 @@ Usage:
   go-apidiff <oldCommit> [newCommit] [flags]
 
 Flags:
-      --compare-imports    Compare exported API differences of the imports in the repo.
-  -h, --help               help for go-apidiff
-      --print-compatible   Print compatible API changes
-      --repo-path string   Path to root of git repository to compare (default "/home/myuser/myproject")
+      --compare-imports        Compare exported API differences of the imports in the repo.
+      --exclude stringArray    Exclude packages matching the given pattern (relative to module root, supports * and ** wildcards)
+  -h, --help                   help for go-apidiff
+      --print-compatible       Print compatible API changes
+      --repo-path string       Path to root of git repository to compare (default "/home/myuser/myproject")
 ```
 
 ## Example output
