@@ -91,6 +91,7 @@ and HEAD is used for newCommit."`,
 	}
 
 	cmd.Flags().StringVar(&opts.RepoPath, "repo-path", cwd, "Path to root of git repository to compare")
+	cmd.Flags().StringVar(&opts.RelativePath, "relative-path", "", "Relative path to compare against")
 	cmd.Flags().BoolVar(&opts.CompareImports, "compare-imports", false, "Compare exported API differences of the imports in the repo. ")
 	cmd.Flags().BoolVar(&printCompatible, "print-compatible", false, "Print compatible API changes")
 
