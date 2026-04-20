@@ -58,6 +58,10 @@ By default, it compares just the module itself and prints only incompatible
 changes. However it can be configured to print compatible changes and to search
 for API incompatibilities in the dependency changes of the repository.
 
+Packages can be excluded from comparison using the --exclude flag. Patterns are
+relative to the module root and support * (single segment) and ** (zero or more
+segments) wildcards. A pattern without wildcards does prefix matching.
+
 When used with just one argument, the passed argument is used for oldCommit,
 and HEAD is used for newCommit."`,
 		Args: checkArgs,
@@ -93,6 +97,7 @@ and HEAD is used for newCommit."`,
 	cmd.Flags().StringVar(&opts.RepoPath, "repo-path", cwd, "Path to root of git repository to compare")
 	cmd.Flags().BoolVar(&opts.CompareImports, "compare-imports", false, "Compare exported API differences of the imports in the repo. ")
 	cmd.Flags().BoolVar(&printCompatible, "print-compatible", false, "Print compatible API changes")
+	cmd.Flags().StringArrayVar(&opts.ExcludePaths, "exclude", nil, "Exclude packages matching the given pattern (relative to module root, supports * and ** wildcards)")
 
 	return cmd
 }
