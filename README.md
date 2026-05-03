@@ -22,6 +22,10 @@ Version of go-apidiff to use (default: `latest`)
 
 Compare exported API differences in the imports of the repo (default: `false`)
 
+#### `ignore-list`
+
+Comma-separated list of packages prefixes to ignore (default: `''`)
+
 #### `print-compatible`
 
 Print compatible API changes (default: `true`)
@@ -85,6 +89,7 @@ Usage:
 Flags:
       --compare-imports    Compare exported API differences of the imports in the repo.
   -h, --help               help for go-apidiff
+  -i, --ignore strings     Ignore packages starting with prefix. Can be repeated.
       --print-compatible   Print compatible API changes
       --repo-path string   Path to root of git repository to compare (default "/home/myuser/myproject")
 ```
