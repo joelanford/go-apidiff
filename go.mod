@@ -1,13 +1,13 @@
 module github.com/joelanford/go-apidiff
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/go-git/go-billy/v5 v5.9.0
 	github.com/go-git/go-git/v5 v5.19.2
 	github.com/spf13/cobra v1.9.1
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
-	golang.org/x/sys v0.46.0
+	golang.org/x/sys v0.48.0
 	golang.org/x/tools v0.44.0
 )
 
