@@ -93,6 +93,7 @@ and HEAD is used for newCommit."`,
 	cmd.Flags().StringVar(&opts.RepoPath, "repo-path", cwd, "Path to root of git repository to compare")
 	cmd.Flags().BoolVar(&opts.CompareImports, "compare-imports", false, "Compare exported API differences of the imports in the repo. ")
 	cmd.Flags().BoolVar(&printCompatible, "print-compatible", false, "Print compatible API changes")
+	cmd.Flags().StringSliceVarP(&opts.IgnoreList, "ignore", "i", []string{}, "Ignore packages starting with prefix. Can be repeated.")
 
 	return cmd
 }

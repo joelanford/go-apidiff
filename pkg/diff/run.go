@@ -37,6 +37,7 @@ type Options struct {
 	OldCommit      string
 	NewCommit      string
 	CompareImports bool
+	IgnoreList     []string
 }
 
 func Run(opts Options) (*Diff, error) {
@@ -97,12 +98,12 @@ func Run(opts Options) (*Diff, error) {
 		}
 	}()
 
-	selfOld, importsOld, err := getPackages(*wt, *oldHash)
+	selfOld, importsOld, err := getPackages(*wt, *oldHash, opts.IgnoreList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from old commit %q (%s): %w", opts.OldCommit, oldHash, err)
 	}
 
-	selfNew, importsNew, err := getPackages(*wt, *newHash)
+	selfNew, importsNew, err := getPackages(*wt, *newHash, opts.IgnoreList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get packages from new commit %q (%s): %w", opts.NewCommit, newHash, err)
 	}
@@ -192,7 +193,16 @@ func getHashes(repo *git.Repository, oldRev, newRev plumbing.Revision) (*plumbin
 	return oldCommitHash, newCommitHash, nil
 }
 
-func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Package, map[string]*packages.Package, error) {
+func ignorePackage(pkg string, ignoreList []string) bool {
+	for _, ignore := range ignoreList {
+		if strings.HasPrefix(pkg, ignore) {
+			return true
+		}
+	}
+	return false
+}
+
+func getPackages(wt git.Worktree, hash plumbing.Hash, ignoreList []string) (map[string]*packages.Package, map[string]*packages.Package, error) {
 	if err := wt.Checkout(&git.CheckoutOptions{Hash: hash, Force: true}); err != nil {
 		return nil, nil, err
 	}
@@ -222,7 +232,7 @@ func getPackages(wt git.Worktree, hash plumbing.Hash) (map[string]*packages.Pack
 	importPkgs := make(map[string]*packages.Package)
 	for _, pkg := range pkgs {
 		// skip internal packages since they do not contain public APIs
-		if strings.HasSuffix(pkg.PkgPath, "/internal") || strings.Contains(pkg.PkgPath, "/internal/") {
+		if strings.HasSuffix(pkg.PkgPath, "/internal") || strings.Contains(pkg.PkgPath, "/internal/") || ignorePackage(pkg.PkgPath, ignoreList) {
 			continue
 		}
 		selfPkgs[pkg.PkgPath] = pkg
