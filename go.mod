@@ -7,7 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.19.3
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
-	golang.org/x/sys v0.48.0
+	golang.org/x/sys v0.49.0
 	golang.org/x/tools v0.49.0
 )
 
