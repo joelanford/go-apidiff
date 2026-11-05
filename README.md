@@ -30,6 +30,10 @@ Print compatible API changes (default: `true`)
 
 Path to root of git repository to compare (default: current working directory)
 
+#### `relative-path`
+
+Relative path to compare against (default: empty)
+
 ### Outputs
 
 #### `semver-type`
@@ -83,10 +87,11 @@ Usage:
   go-apidiff <oldCommit> [newCommit] [flags]
 
 Flags:
-      --compare-imports    Compare exported API differences of the imports in the repo.
-  -h, --help               help for go-apidiff
-      --print-compatible   Print compatible API changes
-      --repo-path string   Path to root of git repository to compare (default "/home/myuser/myproject")
+      --compare-imports        Compare exported API differences of the imports in the repo.
+  -h, --help                   help for go-apidiff
+      --print-compatible       Print compatible API changes
+      --relative-path string   Relative path to compare against
+      --repo-path string       Path to root of git repository to compare (default "/home/myuser/myproject")
 ```
 
 ## Example output
